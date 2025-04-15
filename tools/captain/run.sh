@@ -237,33 +237,54 @@ trap cleanup EXIT
 # schedule campaigns
 for FUZZER in "${FUZZERS[@]}"; do
     export FUZZER
-
+    echo "workdir is:"$WORKDIR
     TARGETS=($(get_var_or_default $FUZZER 'TARGETS'))
     for TARGET in "${TARGETS[@]}"; do
         export TARGET
 
         export FUZZARGS="$(get_var_or_default $FUZZER $TARGET 'FUZZARGS')"
+        
+        # # Original version
+        # # build the Docker image
+        # IMG_NAME="magma/$FUZZER/$TARGET"
+        # echo_time "Building $IMG_NAME"
+        # if ! "$MAGMA"/tools/captain/build.sh &> \
+        #     "${LOGDIR}/${FUZZER}_${TARGET}_build.log"; then
+        #     echo_time "Failed to build $IMG_NAME. Check build log for info."
+        #     continue
+        # fi
+        CVES=($(get_var_or_default $TARGET 'CVEs'))
+        echo_time "CVEs is:"$CVES
+        for CVE in "${CVES[@]}"; do
+            export CVE
+            echo_time "CVE is:"$CVE
 
-        # build the Docker image
-        IMG_NAME="magma/$FUZZER/$TARGET"
-        echo_time "Building $IMG_NAME"
-        if ! "$MAGMA"/tools/captain/build.sh &> \
-            "${LOGDIR}/${FUZZER}_${TARGET}_build.log"; then
-            echo_time "Failed to build $IMG_NAME. Check build log for info."
-            continue
-        fi
+            # Build the Docker image
+            IMG_NAME="magma/$FUZZER/$TARGET/$CVE"
+            echo_time "Building $IMG_NAME"
+            if ! "$MAGMA"/tools/captain/build.sh &> \
+                "${LOGDIR}/${FUZZER}_${TARGET}_${CVE}_build.log"; then
+                echo_time "Failed to build $IMG_NAME. Check build log for info."
+                continue
+            fi
+            
+            # Start the container 
+            PROGRAMS=($(get_var_or_default $FUZZER $TARGET 'PROGRAMS'))
+            echo_time "PROGRAMs is: "$PROGRAMS
+            for PROGRAM in "${PROGRAMS[@]}"; do
+                echo_time "PROGRAM is: "$PROGRAM
+                export PROGRAM
+                export ARGS="$(get_var_or_default $FUZZER $TARGET $PROGRAM 'ARGS')"
 
-        PROGRAMS=($(get_var_or_default $FUZZER $TARGET 'PROGRAMS'))
-        for PROGRAM in "${PROGRAMS[@]}"; do
-            export PROGRAM
-            export ARGS="$(get_var_or_default $FUZZER $TARGET $PROGRAM 'ARGS')"
-
-            echo_time "Starting campaigns for $PROGRAM $ARGS"
-            for ((i=0; i<$REPEAT; i++)); do
-                export NUMWORKERS="$(get_var_or_default $FUZZER 'CAMPAIGN_WORKERS')"
-                export AFFINITY=$(allocate_workers)
-                start_ex &
+                echo_time "Starting campaigns for $PROGRAM $ARGS"
+                for ((i=0; i<$REPEAT; i++)); do
+                    export NUMWORKERS="$(get_var_or_default $FUZZER 'CAMPAIGN_WORKERS')"
+                    export AFFINITY=$(allocate_workers)
+                    start_ex &
+                done
             done
+
         done
+
     done
 done
