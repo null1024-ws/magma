@@ -55,6 +55,10 @@ USER magma:magma
 RUN ${FUZZER}/fetch.sh
 RUN ${FUZZER}/build.sh
 
+# bug id
+ARG BUGS
+ENV BUGS=$BUGS
+
 ARG target_name
 ARG target_path=targets/${target_name}
 ENV TARGET 	${MAGMA_R}/${target_path}
