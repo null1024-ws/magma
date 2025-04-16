@@ -42,7 +42,7 @@ if [ ! -z $HARDEN ]; then
 fi
 
 if [ ! -z "$BUGS" ]; then
-    bug_flag="--build-arg BUGS=\"$BUGS\""
+    bug_flag="--build-arg BUGS=$BUGS"
 fi
 
 set -x
