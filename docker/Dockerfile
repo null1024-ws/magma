@@ -56,8 +56,8 @@ RUN ${FUZZER}/fetch.sh
 RUN ${FUZZER}/build.sh
 
 # bug id
-ARG BUGS
-ENV BUGS=$BUGS
+ARG BUGS_TO_PATCH
+ENV BUGS_TO_PATCH=$BUGS_TO_PATCH
 
 ARG target_name
 ARG target_path=targets/${target_name}
