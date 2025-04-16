@@ -41,19 +41,47 @@ if [ ! -z $HARDEN ]; then
     harden_flag="--build-arg harden=1"
 fi
 
-if [ ! -z "$BUGS" ]; then
-    bug_flag="--build-arg BUGS=$BUGS"
+# if [ ! -z "$BUGS" ]; then
+#     bug_flag="--build-arg BUGS=$BUGS"
+# fi
+
+# set -x
+# docker build -t "$IMG_NAME" \
+#     --build-arg fuzzer_name="$FUZZER" \
+#     --build-arg target_name="$TARGET" \
+#     --build-arg USER_ID=$(id -u $USER) \
+#     --build-arg GROUP_ID=$(id -g $USER) \
+#     $bug_flag \
+#     $mode_flag $isan_flag $harden_flag \
+#     -f "$MAGMA/docker/Dockerfile" "$MAGMA"
+# set +x
+
+# echo "$IMG_NAME"
+
+# Build command initialization
+cmd=(
+  docker build -t "$IMG_NAME"
+  --build-arg fuzzer_name="$FUZZER"
+  --build-arg target_name="$TARGET"
+  --build-arg USER_ID=$(id -u $USER)
+  --build-arg GROUP_ID=$(id -g $USER)
+)
+
+# Append BUGS as a build argument if it's set (handles spaces correctly)
+if [ -n "$BUGS" ]; then
+  cmd+=(--build-arg "BUGS_TO_PATCH=$BUGS")
 fi
 
+# Append other flags as-is
+cmd+=($mode_flag $isan_flag $harden_flag)
+
+# Append Dockerfile path and build context
+cmd+=(-f "$MAGMA/docker/Dockerfile" "$MAGMA")
+
+# Execute the build command
 set -x
-docker build -t "$IMG_NAME" \
-    --build-arg fuzzer_name="$FUZZER" \
-    --build-arg target_name="$TARGET" \
-    --build-arg USER_ID=$(id -u $USER) \
-    --build-arg GROUP_ID=$(id -g $USER) \
-    $bug_flag \
-    $mode_flag $isan_flag $harden_flag \
-    -f "$MAGMA/docker/Dockerfile" "$MAGMA"
+"${cmd[@]}"
 set +x
 
+# Print image name
 echo "$IMG_NAME"
