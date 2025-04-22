@@ -15,7 +15,7 @@ This behavior makes it difficult to **fuzz only a selected subset of bugs** usin
 For example, one might want to fuzz only specific bugs (like `PNG001`, `PNG004`, and `PNG011`). This enhancement allows users to fuzz specific CVEs (bugs) by supporting both **single-target** and **multi-target** directed fuzzing, making the fuzzing process more targeted and efficient.
 
 ### Example Usage
-To build with only `PNG001.patch` and `PNG003.patch`, run:
+To build with only `PNG001.patch`, run:
 ```shell
 cd tools/captain
 
