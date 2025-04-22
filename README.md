@@ -20,7 +20,7 @@ To build with only `PNG001.patch`, run:
 cd tools/captain
 
 # Build the docker image for AFL and a Magma target (e.g., libpng)
-BUGS="PNG001 PNG003" FUZZER=beacon TARGET=libpng ./build.sh
+BUGS="PNG001" FUZZER=beacon TARGET=libpng ./build.sh
 
 # To start a single 24-hour fuzzing campaign, use the start.sh script
 mkdir -p ./workdir
