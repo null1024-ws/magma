@@ -1,7 +1,7 @@
 ### Patch Selection Enhancement
 This fork improves the patching system by enabling **selective application of bug patches**:
 - **Setup patches** (in `patches/setup/`) are always applied automatically.
-- **Bug patches** (in `patches/bugs/`) can now be selectively applied by setting the `BUGS_TO_PATCH` environment variable to a space-separated list of patch names **without the `.patch` extension**.
+- **Bug patches** (in `patches/bugs/`) can now be selectively applied by setting the `BUGS` environment variable to a space-separated list of patch names **without the `.patch` extension**.
 
 ### Why This Enhancement
 In the original Magma Benchmark setup, **all bug patches** (e.g., `PNG001.patch`, `PNG002.patch` for libpng) are applied before fuzzing. Each patch inserts a `MAGMA_LOG(...)` statement to mark a target location. [Titan](https://github.com/5hadowblad3/Titan) later relies on these markers to identify vulnerable lines as shown below and conducts consequent static analysis. 
