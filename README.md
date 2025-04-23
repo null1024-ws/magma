@@ -19,7 +19,7 @@ To build with only `PNG001.patch`, run:
 ```shell
 cd tools/captain
 
-# Build the docker image for directed fuzzer and a Magma target (e.g., libpng)
+# Build the docker image for the directed fuzzer (e.g., beacon) and a Magma target (e.g., libpng)
 BUGS="PNG001" FUZZER=beacon TARGET=libpng ./build.sh
 
 # To start a single 24-hour fuzzing campaign, use the start.sh script
